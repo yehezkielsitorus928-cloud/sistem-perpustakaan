@@ -1,0 +1,46 @@
+services:
+  web:
+    build: .
+    container_name: sipus_flask_app
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=
+      - DB_NAME=library_db
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+  db:
+    image: mariadb:latest
+    container_name: sipus_db
+    environment:
+      MARIADB_ALLOW_EMPTY_ROOT_PASSWORD: "yes"  # Mengizinkan password root kosong sesuai error log
+      MARIADB_DATABASE: library_db
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mariadb-admin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: always
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: sipus_phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_ARBITRARY: 0
+    ports:
+      - "8080:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: always
+
+volumes:
+  db_data:

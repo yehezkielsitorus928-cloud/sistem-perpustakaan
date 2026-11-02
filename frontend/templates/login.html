@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="height: 100vh;">
+    <div class="card p-4 shadow" style="width: 350px;">
+        <h4 class="text-center mb-4">Login Petugas</h4>
+        <form method="POST">
+            <input name="user" class="form-control mb-3" placeholder="Username" required>
+            <input type="password" name="pass" class="form-control mb-4" placeholder="Password" required>
+            <button class="btn btn-primary w-100">Login</button>
+        </form>
+        <div class="text-center mt-3 small">
+            <a href="{{ url_for('main.register') }}">Daftar Petugas Baru</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

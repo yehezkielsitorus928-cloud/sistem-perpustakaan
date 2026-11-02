@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="d-flex">
+    <div class="sidebar">
+        <h4 class="mb-5 text-center">SIPUS ADMIN</h4>
+        <a href="{{ url_for('main.admin') }}" class="active"><i class="bi bi-speedometer2"></i> DASHBOARD</a>
+        <a href="{{ url_for('main.katalog') }}"><i class="bi bi-house"></i> Lihat Katalog</a>
+        <a href="{{ url_for('main.logout') }}" class="text-danger mt-5"><i class="bi bi-power"></i> LOGOUT</a>
+    </div>
+    <div class="p-4 w-100">
+        <h3 class="mb-4">Manajemen Sirkulasi</h3>
+        
+        <div class="row g-3 mb-4">
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h6>Buku Baru</h6>
+                    <form action="{{ url_for('main.tambah_buku') }}" method="POST">
+                        <input name="isbn" placeholder="ISBN" class="form-control mb-2" required>
+                        <input name="judul" placeholder="Judul" class="form-control mb-2" required>
+                        <input name="penulis" placeholder="Penulis" class="form-control mb-2" required>
+                        <input name="stok" type="number" placeholder="Stok" class="form-control mb-2" required>
+                        <button class="btn btn-primary btn-sm w-100">Simpan Buku</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h6>Tambah Mahasiswa</h6>
+                    <form action="{{ url_for('main.tambah_mhs') }}" method="POST">
+                        <input name="nim" placeholder="NIM" class="form-control mb-2" required>
+                        <input name="nama" placeholder="Nama" class="form-control mb-2" required>
+                        <input name="prodi" placeholder="Prodi" class="form-control mb-2" required>
+                        <button class="btn btn-success btn-sm w-100 text-white">Tambah Anggota</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card p-3">
+                    <h6>Transaksi Pinjam</h6>
+                    <form action="{{ url_for('main.pinjam') }}" method="POST">
+                        <input name="nim" placeholder="NIM Mahasiswa" class="form-control mb-2" required>
+                        <input name="isbn" placeholder="ISBN Buku" class="form-control mb-2" required>
+                        <button class="btn btn-warning btn-sm w-100">Catat Peminjaman</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <h5 class="mt-4">Riwayat Transaksi</h5>
+        <div class="table-container shadow-sm mb-4">
+            <table class="table align-middle mb-0">
+                <thead>
+                    <tr><th>NIM</th><th>Tgl.Pinjam</th><th>Tgl.Tenggat</th><th>Tgl.Kembali</th><th>Denda</th><th>Status</th><th>Aksi</th></tr>
+                </thead>
+                <tbody>
+                    {% for p in pinjam %}
+                    <tr>
+                        <td>{{ p.id_anggota }}</td>
+                        <td>{{ p.tgl_pinjam.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ p.tgl_tenggat.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ p.tgl_kembali.strftime('%d/%m/%Y') if p.tgl_kembali else "-" }}</td>
+                        <td>Rp {{ "{:,}".format(p.denda) }}</td>
+                        <td>
+                            <span class="badge {% if p.status == 'Dipinjam' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                {{ p.status }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if p.status == 'Dipinjam' %}
+                            <a href="{{ url_for('main.kembali', id_pinjam=p.id_pinjam) }}" class="btn btn-sm btn-success">Kembalikan</a>
+                            {% else %}
+                            -
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h5>Daftar Mahasiswa</h5>
+                <div class="table-container shadow-sm">
+                    <table class="table align-middle">
+                        <thead><tr><th>NIM</th><th>Nama</th><th>Prodi</th><th>Aksi</th></tr></thead>
+                        <tbody>
+                            {% for a in mhs %}
+                            <tr>
+                                <td>{{ a.nim }}</td>
+                                <td>{{ a.nama }}</td>
+                                <td>{{ a.prodi }}</td>
+                                <td><a href="{{ url_for('main.hapus_mhs', nim=a.nim) }}" class="text-danger"><i class="bi bi-person-x"></i></a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h5>Daftar Koleksi Buku</h5>
+                <div class="table-container shadow-sm">
+                    <table class="table align-middle">
+                        <thead><tr><th>ISBN</th><th>Judul</th><th>Stok</th><th>Aksi</th></tr></thead>
+                        <tbody>
+                            {% for b in buku %}
+                            <tr>
+                                <td>{{ b.isbn }}</td>
+                                <td>{{ b.judul }}</td>
+                                <td>{{ b.stok }}</td>
+                                <td><a href="{{ url_for('main.hapus_buku', isbn=b.isbn) }}" class="text-danger"><i class="bi bi-trash"></i></a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
