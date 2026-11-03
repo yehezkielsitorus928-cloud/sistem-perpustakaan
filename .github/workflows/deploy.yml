@@ -1,9 +1,7 @@
 name: Deploy Library System to GCP
 
 on:
-  push:
-  - main
-  - staging
+  push: [ main, staging ]
 
 jobs:
   deploy:
